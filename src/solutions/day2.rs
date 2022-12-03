@@ -76,7 +76,6 @@ pub fn task2(path: &Path) -> u32 {
 
 mod test {
     use std::path::Path;
-
     use super::{task1, task2};
 
     #[test]
