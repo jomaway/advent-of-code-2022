@@ -13,6 +13,7 @@ fn main() {
         solutions::day1::run();
         solutions::day2::run();
         solutions::day3::run();
+        solutions::day4::run();
 
     } else {
         // check given day
@@ -22,6 +23,7 @@ fn main() {
             Ok(1) => solutions::day1::run(),
             Ok(2) => solutions::day2::run(),
             Ok(3) => solutions::day3::run(),
+            Ok(4) => solutions::day4::run(),
             Ok(day) => println!("Day {} not found", day),
             Err(_) => println!("Arg nees to be a valid day number.")
         }

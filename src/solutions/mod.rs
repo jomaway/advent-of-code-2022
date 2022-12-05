@@ -3,6 +3,7 @@ use std::{path::Path, fs};
 pub mod day1;
 pub mod day2;
 pub mod day3;
+pub mod day4;
 
 pub fn get_input<P>(path: P) -> String
 where P: AsRef<Path>
