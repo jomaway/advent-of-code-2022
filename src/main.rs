@@ -15,6 +15,7 @@ fn main() {
         solutions::day3::run();
         solutions::day4::run();
         solutions::day5::run();
+        solutions::day6::run();
     } else {
         // check given day
         let day = &args[1].parse::<u8>();
@@ -25,6 +26,7 @@ fn main() {
             Ok(3) => solutions::day3::run(),
             Ok(4) => solutions::day4::run(),
             Ok(5) => solutions::day5::run(),
+            Ok(6) => solutions::day6::run(),
             Ok(day) => println!("Day {} not found", day),
             Err(_) => println!("Arg nees to be a valid day number."),
         }
