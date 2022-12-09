@@ -9,15 +9,8 @@ fn main() {
     println!("Args len = {}", args.len());
     if args.len() < 2 {
         // run all days
-        println!("Run all available solutions ...");
-        solutions::day1::run();
-        solutions::day2::run();
-        solutions::day3::run();
-        solutions::day4::run();
-        solutions::day5::run();
-        solutions::day6::run();
-        solutions::day7::run();
-        solutions::day8::run();
+        println!("Run latest available solutions ...");
+        solutions::day9::run();
     } else {
         // check given day
         let day = &args[1].parse::<u8>();
@@ -31,6 +24,7 @@ fn main() {
             Ok(6) => solutions::day6::run(),
             Ok(7) => solutions::day7::run(),
             Ok(8) => solutions::day8::run(),
+            Ok(9) => solutions::day9::run(),
             Ok(day) => println!("Day {} not found", day),
             Err(_) => println!("Arg nees to be a valid day number."),
         }
