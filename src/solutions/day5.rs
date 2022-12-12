@@ -1,7 +1,5 @@
 use std::{num::ParseIntError, path::Path, str::FromStr};
 
-use itertools::Itertools;
-
 use super::get_input_by_block;
 
 pub fn run() {
