@@ -1,4 +1,4 @@
-use std::{path::Path, collections::HashSet, process::exit, fmt::Display};
+use std::{path::Path, collections::HashSet, fmt::Display};
 
 use crate::solutions::get_input_by_line;
 
