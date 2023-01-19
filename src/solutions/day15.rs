@@ -1,5 +1,5 @@
 use core::panic;
-use std::{path::Path, collections::HashSet};
+use std::{path::Path, collections::HashSet, ops::RangeInclusive};
 
 use itertools::Itertools;
 use regex::Regex;
@@ -33,17 +33,6 @@ impl Point {
     fn manhattan_distance(&self, other: &Point) -> i32 {
         (self.x - other.x).abs() + (self.y - other.y).abs()
     }
-
-    fn get_all_points_within_distance_of(&self, dist: i32) -> Vec<Point> {
-        let x_min = self.x - dist;
-        let x_max = self.x + dist;
-        let y_max = self.y + dist;
-        let y_min = self.y - dist;
-
-        (x_min..=x_max).flat_map(|x| (y_min..=y_max).map(move |y| Point { x, y }))
-        .filter(|p| self.manhattan_distance(p) <= dist )
-        .collect()
-    }
 }
 
 struct Sensor {
@@ -58,14 +47,14 @@ impl Sensor {
         self.pos.manhattan_distance(&self.beacon)
     }
 
-    fn get_scanned_area_in_row(&self, row: i32) -> Option<Vec<i32>>
+    fn get_scanned_area_in_row(&self, row: i32) -> Option<RangeInclusive<i32>>
     {
         let dist = self.get_beacon_distance();
         let offset = dist - (self.pos.y - row).abs();
         if offset < 0 {
             None
         } else {
-            Some((self.pos.x - offset..=self.pos.x + offset).collect())
+            Some(self.pos.x - offset..=self.pos.x + offset)
         }
     }
 }
@@ -112,29 +101,49 @@ pub fn task1(path: &Path) -> u32 {
 }
 
 
-pub fn task2(path: &Path) -> u32 {
-    unimplemented!();
+fn get_tuning_frequency(x:i32, y:i32) -> i64 {
+    x as i64 * 4_000_000 + y as i64
 }
 
-mod tests {
-    use std::path::Path;
-    use super::{task1, task2, DAY};
+fn row_range(row: i32, sensors: &Vec<Sensor>) -> Vec<RangeInclusive<i32>> {
+    let mut ranges : Vec<_> = sensors.iter().flat_map(|s| s.get_scanned_area_in_row(row)).collect();
 
-    #[test]
-    fn test_task1(){
-        let path_str : String = format!("src/inputs/day{}-e.txt",DAY);
-        let path = Path::new(&path_str);
-        let expected_result: u32 = 0;
+    ranges.sort_unstable_by_key(|range| *range.start());
 
-        assert_eq!(task1(path), expected_result)
+    let mut merged_ranges = vec![ranges[0].clone()];
+   
+    for next in &ranges[1..] {
+        let last_idx = merged_ranges.len() - 1;
+        let last = &merged_ranges[last_idx];
+        // check if the two sorted ranges overlap
+        if next.start() <= last.end() || last.end() + 1 == *next.start() {
+            // replace last with a single bigger range if possible
+            if next.end() > last.end() {
+                let old = &merged_ranges[last_idx];
+                let new = *old.start()..=*next.end();
+                merged_ranges[last_idx] = new;
+            }
+        } else {
+            // add to the ranges for this row
+            merged_ranges.push(next.clone());
+        }
     }
+
+    merged_ranges
+
+}
+
+pub fn task2(path: &Path) -> i64 {
+    let sensors = parse_input(path);
+    let max = 4_000_000;
+
+    let (row, col_range) = (0..=max).rev()
+        .map(|row| (row, row_range(row, &sensors)))
+        .find(|(_,ranges)| ranges.len()  > 1)
+        .unwrap();
     
-    #[test]
-    fn test_task2(){
-        let path_str : String = format!("src/inputs/day{}-e.txt",DAY);
-        let path = Path::new(&path_str);
-        let expected_result: u32 = 0;
+    let col = col_range.first().unwrap().end() + 1;
 
-        assert_eq!(task2(path), expected_result)
-    }
+    get_tuning_frequency(col, row) as i64
 }
+
